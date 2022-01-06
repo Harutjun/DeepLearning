@@ -41,7 +41,7 @@ class ConvNormBlock(nn.Module):
         )
 
     def forward(self, x):
-        return self.block(x)
+        return x + self.block(x)
 
 """
     Implemetation of Uk in the article.
