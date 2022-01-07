@@ -57,7 +57,6 @@ class Generator(nn.Module):
 
     def forward(self, x):
         for layer in self.layers:
-            print(x.shape)
             x = layer(x)
 
         return x
@@ -71,7 +70,7 @@ def test_generator():
     sample = torch.rand((2, 3, 256, 256))
     out = gen(sample)
 
-
+    print(out.shape)
     print(gen.layers)
 
 test_generator()
