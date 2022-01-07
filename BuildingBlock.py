@@ -67,7 +67,7 @@ class UpsampleBlock(nn.Module):
         super().__init__()
 
         self.block = nn.Sequential(
-            nn.ConvTranspose2d(in_channels, out_channels=k_filters, kernel_size=(3, 3), stride=2),
+            nn.ConvTranspose2d(in_channels, out_channels=k_filters, kernel_size=(3, 3), stride=2, padding=1, output_padding=1),
             nn.InstanceNorm2d(k_filters),
             nn.ReLU()
         )
