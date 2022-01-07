@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from torch.nn.modules.padding import ReflectionPad2d
 import BuildingBlock
+
+
 """
     In this module we define the Generator class
 """
@@ -33,7 +35,13 @@ class Generator(nn.Module):
         ResLayers = 3 + 3 * config
         super().__init__()
         self.layers = self.__init__layers(ResLayers, in_channels)
-
+        
+        
+    def _init_weights():
+        def init_func(m):  # define the initialization function
+            nn.init.normal_(m.weight.data, 0.0, 0.02)
+            nn.init.constant_(m.bias.data, 0.0)
+            
     def __init__layers(selfself, ResLayers, in_channels):
         """
             Internal method to generate layers from layer's config list.
@@ -51,7 +59,7 @@ class Generator(nn.Module):
 
         layers += [BuildingBlock.UpsampleBlock(256, k_filters=128)]
         layers += [BuildingBlock.UpsampleBlock(128, k_filters=64)]
-        layers += [BuildingBlock.ConvNormBlock(64, stride=1, kernel_size=(7, 7),  k_filters=3, padding=3)]
+        layers += [BuildingBlock.ConvNormBlock(64, stride=1, kernel_size=(7, 7),  k_filters=3, padding=3, last=True)]
 
         return layers
 
@@ -67,11 +75,12 @@ def test_generator():
     config = 2
     gen = Generator(config=config, in_channels=3)
 
+
     sample = torch.rand((2, 3, 256, 256))
     out = gen(sample)
 
     print(out.shape)
     #print(gen.layers)
 
-test_generator()
+#test_generator()
 

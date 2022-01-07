@@ -16,15 +16,21 @@ from torch.nn.modules.padding import ReflectionPad2d
 
 class ConvNormBlock(nn.Module):
 
-    def __init__(self, in_channels, stride, kernel_size, k_filters=64, padding=1):
+    def __init__(self, in_channels, stride, kernel_size, k_filters=64, padding=1, last = False):
         super().__init__()
 
-        self.block = nn.Sequential(
-            nn.ReflectionPad2d(padding),
-            nn.Conv2d(in_channels, out_channels=k_filters, kernel_size=kernel_size, stride=stride),
-            nn.InstanceNorm2d(k_filters),
-            nn.ReLU()
-        )
+        if not last:
+            self.block = nn.Sequential(
+                nn.ReflectionPad2d(padding),
+                nn.Conv2d(in_channels, out_channels=k_filters, kernel_size=kernel_size, stride=stride),
+                nn.InstanceNorm2d(k_filters),
+                nn.ReLU()
+            )
+        else:
+            self.block = nn.Sequential(
+                nn.ReflectionPad2d(padding),
+                nn.Conv2d(in_channels, out_channels=k_filters, kernel_size=kernel_size, stride=stride),
+            )
 
     def forward(self, x):
         return self.block(x)
@@ -48,8 +54,6 @@ class ResBlock(nn.Module):
             nn.ReflectionPad2d(1),
             nn.Conv2d(k_filters, out_channels=in_channels, kernel_size=(3, 3)),
             nn.InstanceNorm2d(k_filters)
-
-
         )
 
     def forward(self, x):

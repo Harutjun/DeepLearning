@@ -9,7 +9,11 @@ class ConvBlock(nn.Module):
     def __init__(self, in_channels, out_channels ,use_instance_norm=True):
         super().__init__()
         self.norm = use_instance_norm
-        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=(4, 4), stride=2, padding=1, padding_mode='reflect')
+        
+        if out_channels == 512:
+            self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=(4, 4), padding=1, padding_mode='reflect')
+        else:
+            self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=(4, 4), stride=2, padding=1, padding_mode='reflect')
         self.leaky_relu = nn.LeakyReLU(0.2, inplace=True)
 
         if self.norm:
@@ -27,11 +31,14 @@ class ConvBlock(nn.Module):
 """
 class Discriminator(nn.Module):
    
-    def __init__(self, config, in_channels):
+    def __init__(self, config = ["C64","C128","C256","C512"], in_channels=3):
         super().__init__()
 
         self.layers = self._init_layers(config, in_channels)
+        #self._init_weights()
     
+
+                
     def forward(self, x):
         for layer in self.layers:
             x = layer(x)
@@ -63,7 +70,7 @@ class Discriminator(nn.Module):
             curr_in_channels = of_filters
         
         
-        last_conv = nn.Conv2d(curr_in_channels, 1, (4, 4), stride= 1, padding=1, padding_mode='reflect')
+        last_conv = nn.Conv2d(curr_in_channels, 1, 4, padding=1, padding_mode='reflect')
         
         layers += [last_conv]
         return layers
@@ -79,12 +86,12 @@ def test_discriminiator():
         "C256",
         "C512"     
     ]
-    disc = Discriminator(cfg, 3)
+    disc = Discriminator(cfg, 6)
     
-    sample = torch.rand((2, 3, 256, 256))
+    sample = torch.rand((2, 6, 256, 256))
     
     out = disc(sample)
     
     print(out.shape)
     
-test_discriminiator()
+#test_discriminiator()
