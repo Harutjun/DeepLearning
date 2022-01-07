@@ -71,7 +71,7 @@ def test_generator():
     out = gen(sample)
 
     print(out.shape)
-    print(gen.layers)
+    #print(gen.layers)
 
 test_generator()
 
