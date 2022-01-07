@@ -10,10 +10,11 @@ from PIL import Image
 """
 class ShoeEdgeDataset(Dataset):
     
-    def __init__(self, train_dir, val_dir):
+    def __init__(self, train_dir, val_dir, flip, transform=None):
         self.train_dir = train_dir
         self.val_dir = val_dir
-        
+        self.flip = flip
+        self.transform = transform
         
         # load all the file names
         self.file_names = os.listdir(train_dir)
@@ -25,15 +26,22 @@ class ShoeEdgeDataset(Dataset):
         im_width, im_height = im.size
         
         # take the first half of the image as source
-        src_im = im.crop((0,0, im_width // 2, 0)) 
+        
+        src_im = im.crop((0,0, im_width // 2, im_height)) 
         
         # set the other half as target
-        target_im = im.crop((im_width // 2, 0, 0, 0))
+        target_im = im.crop((im_width // 2, 0, im_width, im_height))
+        
+        if self.flip:
+            src_im, target_im = target_im, src_im
+        
+        if self.transform:
+            return self.transform(src_im), self.transform(target_im)
         
         return src_im, target_im
     
     
-    def len(self):
+    def __len__(self):
         return len(self.file_names)
         
         
