@@ -50,7 +50,6 @@ class Discriminator(nn.Module):
     def _init_layers(self, config: list, in_channels):
         """
             Internal method to generate layers from layer's config list.
-
         Args:
             config (list): list of string representing layers
         """
@@ -70,7 +69,7 @@ class Discriminator(nn.Module):
             curr_in_channels = of_filters
         
         
-        last_conv = nn.Conv2d(curr_in_channels, 1, 4, padding=1, padding_mode='reflect')
+        last_conv = nn.Conv2d(curr_in_channels, 1, 4, padding=1)
         
         layers += [last_conv]
         return layers

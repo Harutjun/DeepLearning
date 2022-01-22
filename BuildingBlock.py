@@ -16,20 +16,27 @@ from torch.nn.modules.padding import ReflectionPad2d
 
 class ConvNormBlock(nn.Module):
 
-    def __init__(self, in_channels, stride, kernel_size, k_filters=64, padding=1, last = False):
+    def __init__(self, in_channels, stride, kernel_size, k_filters=64, padding=1, last = False, first=False):
         super().__init__()
 
-        if not last:
+        if not last and not first:
             self.block = nn.Sequential(
-                nn.ReflectionPad2d(padding),
+                nn.Conv2d(in_channels, out_channels=k_filters, kernel_size=kernel_size, stride=stride, padding=1),
+                nn.InstanceNorm2d(k_filters),
+                nn.ReLU(inplace=True)
+            )
+        elif first:
+            self.block = nn.Sequential(
+                nn.ReflectionPad2d(3),
                 nn.Conv2d(in_channels, out_channels=k_filters, kernel_size=kernel_size, stride=stride),
                 nn.InstanceNorm2d(k_filters),
-                nn.ReLU()
+                nn.ReLU(inplace=True)
             )
         else:
             self.block = nn.Sequential(
-                nn.ReflectionPad2d(padding),
+                nn.ReflectionPad2d(3),
                 nn.Conv2d(in_channels, out_channels=k_filters, kernel_size=kernel_size, stride=stride),
+                nn.Tanh()
             )
 
     def forward(self, x):
@@ -50,7 +57,7 @@ class ResBlock(nn.Module):
             nn.ReflectionPad2d(1),
             nn.Conv2d(in_channels, out_channels=k_filters, kernel_size=(3, 3)),
             nn.InstanceNorm2d(k_filters),
-            nn.ReLU(True),
+            nn.ReLU(inplace=True),
             nn.ReflectionPad2d(1),
             nn.Conv2d(k_filters, out_channels=in_channels, kernel_size=(3, 3)),
             nn.InstanceNorm2d(k_filters)
@@ -71,9 +78,10 @@ class UpsampleBlock(nn.Module):
         super().__init__()
 
         self.block = nn.Sequential(
-            nn.ConvTranspose2d(in_channels, out_channels=k_filters, kernel_size=(3, 3), stride=2, padding=1, output_padding=1),
+            nn.Upsample(scale_factor=2),
+            nn.Conv2d(in_channels, k_filters, 3, stride=1, padding=1),
             nn.InstanceNorm2d(k_filters),
-            nn.ReLU()
+            nn.ReLU(inplace=True),
         )
 
     def forward(self, x):
