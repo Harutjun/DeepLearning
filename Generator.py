@@ -26,13 +26,13 @@ import BuildingBlock
 
 class Generator(nn.Module):
 
-    def __init__(self, config, in_channels):
+    def __init__(self, config, in_channels, out_im_ch = 1):
         """
         config = 1 :  6 resnet blocks
         config = 2 :  9 resnet blocks
-
         """
         ResLayers = 3 + 3 * config
+        self.out_im_ch = out_im_ch
         super().__init__()
         self.layers = self.__init__layers(ResLayers, in_channels)
         
@@ -42,7 +42,7 @@ class Generator(nn.Module):
             nn.init.normal_(m.weight.data, 0.0, 0.02)
             nn.init.constant_(m.bias.data, 0.0)
             
-    def __init__layers(selfself, ResLayers, in_channels):
+    def __init__layers(self, ResLayers, in_channels):
         """
             Internal method to generate layers from layer's config list.
         Args:
@@ -50,7 +50,7 @@ class Generator(nn.Module):
         """
 
         layers = nn.ModuleList()
-        layers += [BuildingBlock.ConvNormBlock(in_channels, stride=1, kernel_size=(7, 7), k_filters=64, padding=3)]
+        layers += [BuildingBlock.ConvNormBlock(in_channels, stride=1, kernel_size=(7, 7), k_filters=64, padding=3, first=True)]
         layers += [BuildingBlock.ConvNormBlock(64, stride=2, kernel_size=(3, 3),  k_filters=128)]
         layers += [BuildingBlock.ConvNormBlock(128, stride=2, kernel_size=(3, 3),  k_filters=256)]
 
@@ -59,7 +59,7 @@ class Generator(nn.Module):
 
         layers += [BuildingBlock.UpsampleBlock(256, k_filters=128)]
         layers += [BuildingBlock.UpsampleBlock(128, k_filters=64)]
-        layers += [BuildingBlock.ConvNormBlock(64, stride=1, kernel_size=(7, 7),  k_filters=3, padding=3, last=True)]
+        layers += [BuildingBlock.ConvNormBlock(64, stride=1, kernel_size=(7, 7),  k_filters=self.out_im_ch, padding=3, last=True)]
 
         return layers
 
@@ -70,17 +70,16 @@ class Generator(nn.Module):
         return x
 
 
-def test_generator():
+def test_generator(device='cuda'):
 
-    config = 2
-    gen = Generator(config=config, in_channels=3)
+    config = 1
+    gen = Generator(config=config, in_channels=3).to(device)
 
 
-    sample = torch.rand((2, 3, 256, 256))
+    sample = torch.rand((2, 3, 256, 256)).to(device)
     out = gen(sample)
 
     print(out.shape)
     #print(gen.layers)
 
 #test_generator()
-
