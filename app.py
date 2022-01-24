@@ -11,17 +11,17 @@ import torch
 import torch.nn
 import torchvision.transforms as transforms
 import torchvision.transforms.functional as F
-from Generator import Generator
+from Model.Generator import Generator
 
 class Paint(object):
 
     DEFAULT_PEN_SIZE = 5.0
     DEFAULT_COLOR = 'black'
 
-    def _init_gen(self):
+    def _init_gen(self, state):
         gen = Generator(1, in_channels=3, out_im_ch=3)
         
-        gen.load_state_dict(torch.load(r'checkpoints/gen_g_latest_gs.pt'))
+        gen.load_state_dict(torch.load(state))
         gen.eval()
         
         return gen
@@ -37,8 +37,8 @@ class Paint(object):
         
         
     def __init__(self):
-        self.gen = self._init_gen()
-        
+        self.gen = self._init_gen(r'checkpoints/gen_g_latest_gs.pt')
+        self.gen2 = self._init_gen(r'checkpoints/gen_f_latest_gs.pt')
         
         self.inv_trans = transforms.Normalize(
                                 mean=[-1, -1, -1],
@@ -72,14 +72,17 @@ class Paint(object):
 
         self.c = Canvas(self.root, bg='white', width=256, height=256)
         self.gen_c = Canvas(self.root, bg='white', width=256, height=256)
-        self.c.grid(row=1, columnspan=5)
+        self.gen_edges = Canvas(self.root, bg='white', width=256, height=256)
         
-        #self.label = Label(self.root, image=None)
-        #self.label.grid(row=1, column = 5, columnspan=5)
+        self.c.grid(row=1, columnspan=5)
         self.gen_c.grid(row=1, column = 5, columnspan=5)
+        self.gen_edges.grid(row=1, column = 10, columnspan=5)
         
         self.generate_button = Button(self.root, text='Generate', command=self.use_generate)
         self.generate_button.grid(row=0, column=5)
+        
+        self.generate_button = Button(self.root, text='To Edges !', command=self.cvt_to_edges)
+        self.generate_button.grid(row=0, column=8)
 
         self.setup()
         self.root.mainloop()
@@ -93,10 +96,29 @@ class Paint(object):
         self.active_button = self.pen_button
         self.c.bind('<B1-Motion>', self.paint)
         self.c.bind('<ButtonRelease-1>', self.reset)
+    
+    def cvt_to_edges(self):
+        im = self.show_canvas(self.gen_c)
+        
+        im_net = self._prepare_image(im)
+        
+        
+        out_im = self.gen2(im_net)
+        
+        out_im = self.inv_trans(out_im)
+        out_im = out_im.squeeze(0)
+        shoe_im = F.to_pil_image(out_im)
+        
+        shoe_im = shoe_im.resize((248,248))
+        photo = ImageTk.PhotoImage(image =shoe_im)
+        self.gen_edges.create_image(0, 0, image=photo, anchor=tkinter.NW)
+        #self.label.place(x=240, y=50)
+        
+        self.root.mainloop()
+
         
     def use_generate(self):
-        self.generate_image(self.generate_button)
-        im = self.show_canvas()
+        im = self.show_canvas(self.c)
         
         im_net = self._prepare_image(im)
         
@@ -107,22 +129,18 @@ class Paint(object):
         out_im = out_im.squeeze(0)
         shoe_im = F.to_pil_image(out_im)
         
-        # plt.imshow(shoe_im)
-        # plt.show()
         
         shoe_im = shoe_im.resize((248,248))
         photo = ImageTk.PhotoImage(image =shoe_im)
         self.gen_c.create_image(0, 0, image=photo, anchor=tkinter.NW)
-        #self.label.place(x=240, y=50)
         
         self.root.mainloop()
-        #self.label.image = photo
-        # plt.imshow(shoe_im)
-        # plt.show()
+
 
     def use_clear(self):
         self.c.delete("all")
         self.gen_c.delete("all")
+        self.gen_edges.delete("all")
         
     def use_pen(self):
         self.activate_button(self.pen_button)
@@ -171,11 +189,8 @@ class Paint(object):
         self.old_x, self.old_y = None, None
 
     
-    def generate_image(self, event):
-        pass
     
-    
-    def show_canvas(self):
+    def show_canvas(self, c):
         x=self.root.winfo_rootx()+self.c.winfo_x()
         y=self.root.winfo_rooty()+self.c.winfo_y()
         x1=x+self.c.winfo_width()

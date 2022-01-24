@@ -2,9 +2,8 @@
 from __future__ import print_function
 import torch
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 import os
-
 
 def tensor2im(input_image, imtype=np.uint8):
     """"Converts a Tensor array into a numpy image array.
@@ -101,3 +100,43 @@ def mkdir(path):
     """
     if not os.path.exists(path):
         os.makedirs(path)
+    
+def get_ds_stats(ds):
+    # calculate mean and std for the dataset
+    
+    import torchvision.transforms
+    
+    to_tensor = torchvision.transforms.ToTensor()
+    to_pil = torchvision.transforms.ToPILImage()
+    
+    n_samples = ds.__len__()
+    color_ch_sum = 0
+    color_ch_sqrd_sum = 0
+    
+    bw_ch_sum = 0
+    bw_ch_sqrd_sum = 0
+    
+    from tqdm import tqdm
+    for ii in tqdm(range(n_samples)):
+        color, _ = ds.__getitem__(ii)
+        
+        bw = to_tensor(ImageOps.grayscale(to_pil(color.squeeze(0)))).unsqueeze(0)
+        
+        
+        # mean across W,H
+        color_ch_sum += torch.mean(color, dim=[1,2])
+        color_ch_sqrd_sum += torch.mean(color**2, dim=[1,2])
+        
+        bw_ch_sum += torch.mean(bw)
+        bw_ch_sqrd_sum += torch.mean(bw)
+        
+        
+        
+    mean_c = color_ch_sum / n_samples
+    mean_bw = bw_ch_sum / n_samples
+    # std = sqrt(E[X^2] - (E[X])^2)
+    std_C = (color_ch_sqrd_sum / n_samples - mean_c ** 2) ** 0.5
+    std_bw = (bw_ch_sqrd_sum / n_samples - mean_bw ** 2) ** 0.5
+    
+    
+    return (mean_c, std_C) , (mean_bw, std_bw)
