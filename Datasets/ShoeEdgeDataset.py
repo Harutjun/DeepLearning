@@ -10,17 +10,19 @@ from PIL import Image, ImageOps
 """
 class ShoeEdgeDataset(Dataset):
     
-    def __init__(self, train_dir, val_dir, flip, transform=None, max_items = 0):
-        self.train_dir = train_dir
+    def __init__(self, train_dir, val_dir, flip, transform=None, max_items = 0, val=False):
+        
+        
+        self.train_dir = val_dir if val else train_dir
         self.val_dir = val_dir
         self.flip = flip
         self.transform = transform
         
         if max_items == 0:
-            max_items = len(os.listdir(train_dir))
+            max_items = len(os.listdir(self.train_dir))
             
         # load all the file names
-        self.file_names = os.listdir(train_dir)[:int(max_items)]
+        self.file_names = os.listdir(self.train_dir)[:int(max_items)]
         
     
     def __getitem__(self, index):
