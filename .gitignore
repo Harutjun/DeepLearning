@@ -4,3 +4,4 @@ __pycache__
 runs
 BWToColorData/
 Datasets/video.mp4
+checkpoints/
