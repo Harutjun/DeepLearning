@@ -8,7 +8,6 @@ Interactive CycleGan - Applied CycleGan architecture to create cool interactive 
   <p align="center">
     Elay Dahan •
     Harutjun Magakyan
-
   </p>
 
 

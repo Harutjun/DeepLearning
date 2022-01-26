@@ -3,5 +3,5 @@ __pycache__
 .idea
 runs
 BWToColorData/
-Datasets/video.mp4
+Datasets\video.mp4
 checkpoints/
