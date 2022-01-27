@@ -19,6 +19,10 @@ class BWToColorDS(Dataset):
             
             self.black_fn = os.listdir(train_bw)
             self.color_fn = os.listdir(train_color)
+        else:
+            self.len = max_items
+            self.black_fn = os.listdir(train_bw)[:max_items]
+            self.color_fn = os.listdir(train_color)[:max_items]
     
     
     def __getitem__(self, index):
