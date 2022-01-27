@@ -12,12 +12,10 @@ Interactive CycleGan - Applied CycleGan architecture to create cool interactive 
 
 
 <p align="center">
-  <img src="https://github.com/taldatech/soft-intro-vae-web/raw/main/assets/ffhq_samples.png" height="120">
-  <img src="https://raw.githubusercontent.com/taldatech/soft-intro-vae-web/main/assets/celebahq_recons.png" height="120">
+  <img src="https://github.com/Harutjun/DeepLearning/raw/main/assets/sketch2shoes.png" height="120">
 </p>
 <p align="center">
-  <img src="https://github.com/taldatech/soft-intro-vae-web/raw/main/assets/3d_plane_to_car.gif" height="100">
-  <img src="https://raw.githubusercontent.com/taldatech/soft-intro-vae-web/main/assets/density_plot_png_f.PNG" height="100">
+  <img src="https://github.com/Harutjun/DeepLearning/raw/main/assets/app_gif.gif" height="100">
 </p>
 
 # Interactive CycleGan
@@ -36,8 +34,6 @@ We built an interactive app that can generate shoe images based on user drawing.
 The model is trained on the Zappos50K datset.
 We also applied this model to colorize Gray scale images to RGB images.*
 
-- [soft-intro-vae-pytorch](#soft-intro-vae-pytorch)
-- [Soft-IntroVAE](#soft-introvae)
   * [Citation](#citation)
   * [Prerequisites](#prerequisites)
   * [Repository Organization](#repository-organization)
@@ -55,29 +51,25 @@ We also applied this model to colorize Gray scale images to RGB images.*
 |----------------------|----|
 |`Python`|  `3.6 (Anaconda)`|
 |`torch`|  >= `1.2` (tested on `1.7`)|
-|`torchvision`|  >= `0.4`|
+|`torchvision`|  >= `0.4` (tested on `0.8.1`) |
 |`matplotlib`|  >= `2.2.2`|
 |`numpy`|  >= `1.17`|
-|`opencv`|  >= `3.4.2`|
 |`tqdm`| >= `4.36.1`|
-|`scipy`| >= `1.3.1`|
-
+|`Pillow`| >= `9.0.0`|
+|`Tensorboard`| >= `2.7.0`|
 
 
 ## Repository Organization
 
 |File name         | Content |
 |----------------------|------|
-|`/soft_intro_vae`| directory containing implementation for image data|
-|`/soft_intro_vae_2d`| directory containing implementations for 2D datasets|
-|`/soft_intro_vae_3d`| directory containing implementations for 3D point clouds data|
-|`/soft_intro_vae_bootstrap`| directory containing implementation for image data using bootstrapping (using a target decoder)|
-|`/style_soft_intro_vae`| directory containing implementation for image data using ALAE's style-based architecture|
-|`/soft_intro_vae_tutorials`| directory containing Jupyter Noteboook tutorials for the various types of Soft-IntroVAE|
+|`/Model`| directory containing implementation of CycleGAN model|
+|`/Datasets`| directory containing implementations sketch2shoes and grayscale2rgb datasets|
+|`/app.py`| skecth2shoes python application (requires pretrained weights)|
+|`/colorize_image.py`| script to colorize given grayscale frame (requires pretrained weights)|
+|`/train_*.py`| Training scripts for grayscale2rgb and sketch2shoes|
 
 
 ## Credits
-* Adversarial Latent Autoencoders, Pidhorskyi et al., CVPR 2020 - [Code](https://github.com/podgorskiy/ALAE), [Paper](https://arxiv.org/abs/2004.04467).
-* FID is calculated natively in PyTorch using Seitzer implementation - [Code](https://github.com/mseitzer/pytorch-fid)
-
+* Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Neworks Jun-Yan Zhu.,- [Code](https://github.com/junyanz/CycleGAN), [Paper](https://arxiv.org/pdf/1703.10593.pdf).
 
