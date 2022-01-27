@@ -12,10 +12,10 @@ Interactive CycleGan - Applied CycleGan architecture to create cool interactive 
 
 
 <p align="center">
-  <img src="https://github.com/Harutjun/DeepLearning/raw/main/assets/sketch2shoes.png" height="120">
+  <img src="https://github.com/Harutjun/DeepLearning/blob/EvaluationScript/assets/sketch2shoes.png" height="120">
 </p>
 <p align="center">
-  <img src="https://github.com/Harutjun/DeepLearning/raw/main/assets/app_gif.gif" height="100">
+  <img src="https://github.com/Harutjun/DeepLearning/blob/EvaluationScript/assets/app_gif.gif" height="100">
 </p>
 
 # Interactive CycleGan
