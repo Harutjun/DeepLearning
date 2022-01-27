@@ -1,4 +1,18 @@
+<<<<<<< HEAD
 Data
 __pycache__
 .idea
 runs
+=======
+Data/
+__pycache__
+.idea
+runs
+BWToColorData/
+Datasets\video.mp4
+checkpoints/
+nyc2.jpg
+old_jerusalem.jpg
+old_jerusalem2.jpg
+old_jerusalem3.jpg
+>>>>>>> EvaluationScript
